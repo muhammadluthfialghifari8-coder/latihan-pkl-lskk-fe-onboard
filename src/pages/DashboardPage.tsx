@@ -4,7 +4,8 @@ import type { ColumnsType } from 'antd/es/table';
 import { useItems } from '../hooks/useItems';
 import type { Item } from '../types/item';
 import ItemFormModal from '../components/ItemFormModal';
-
+import { useAuthStore } from '../stores/authStore';
+import { useNavigate } from 'react-router-dom';
 interface ItemFormData {
   name: string;
   description: string;
@@ -12,6 +13,8 @@ interface ItemFormData {
 }
 
 const DashboardPage = () => {
+  const navigate = useNavigate(); // Inisialisasi navigate
+  const logout = useAuthStore((state) => state.logout); // Ambil fungsi logout
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,6 +24,12 @@ const DashboardPage = () => {
   const [localItems, setLocalItems] = useState<Item[]>([]); 
 
   const { data, isLoading, isError } = useItems(page, limit);
+
+  const handleLogout = () => {
+    logout(); // Hapus token & user dari Zustand
+    message.info('Anda telah berhasil keluar');
+    navigate('/login', { replace: true }); // Redirect paksa ke login
+  };
 
   // LOGIKA DISPLAY DATA YANG DIPERBAIKI
   const displayData = useMemo(() => {
@@ -104,14 +113,23 @@ const DashboardPage = () => {
     },
   ];
 
-  if (isError) return <div className="p-8 text-red-500">Gagal memuat data!</div>;
-
   return (
     <div className="p-8">
       <Card 
         title="Daftar Produk (Client-Side CRUD)" 
         variant="borderless"
         extra={
+        <Space size="small">
+            {/* TOMBOL LOGOUT */}
+            <Popconfirm
+              title="Yakin ingin keluar?"
+              description="Anda harus login kembali untuk mengakses dashboard."
+              onConfirm={handleLogout}
+              okText="Ya, Keluar"
+              cancelText="Batal"
+            >
+              <Button danger>Logout</Button>
+            </Popconfirm>
           <Button 
             type="primary" 
             onClick={() => { 
@@ -119,9 +137,9 @@ const DashboardPage = () => {
               setIsModalOpen(true); 
             }}
           >
-            + Tambah Produk
+            + Tambahkan Produk
           </Button>
-        }
+        </Space>        }
       >
         <Table
           columns={columns}
@@ -133,6 +151,11 @@ const DashboardPage = () => {
             pageSize: limit,
             total: displayData.length,
             onChange: (newPage) => setPage(newPage),
+          }}
+          locale={{
+            emptyText: isError
+              ? 'Backend tidak tersedia. Data belum dapat dimuat.'
+              : 'Belum ada data produk.',
           }}
         />
       </Card>

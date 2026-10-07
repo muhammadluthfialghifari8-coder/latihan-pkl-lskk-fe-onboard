@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware'; // Optional: biar token ga ilang pas refresh
 
 interface User {
   id: string;
@@ -17,27 +16,20 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      token: null,
-      user: null,
-      isAuthenticated: false,
+export const useAuthStore = create<AuthState>((set) => ({
+  token: null,
+  user: null,
+  isAuthenticated: false,
 
-      login: (token, user) => set({ 
-        token, 
-        user, 
-        isAuthenticated: true 
-      }),
+  login: (token, user) => set({
+    token,
+    user,
+    isAuthenticated: true,
+  }),
 
-      logout: () => set({ 
-        token: null, 
-        user: null, 
-        isAuthenticated: false 
-      }),
-    }),
-    {
-      name: 'auth-storage', // nama key di localStorage
-    }
-  )
-);
+  logout: () => set({
+    token: null,
+    user: null,
+    isAuthenticated: false,
+  }),
+}));
