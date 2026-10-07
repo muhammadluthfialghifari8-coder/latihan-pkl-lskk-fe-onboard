@@ -73,3 +73,8 @@ export default defineConfig([
 ])
 
 ```
+## Progress Minggu 1
+- [x] Setup Environment (Vite, React, TS, Tailwind v4)
+- [x] Auth Flow (Zustand + RHF + Zod)
+- [x] Data Fetching & Pagination (TanStack Query)
+- [x] Form Tambah/Edit (Ant Design Modal)
