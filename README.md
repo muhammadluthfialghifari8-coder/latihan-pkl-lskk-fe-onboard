@@ -78,3 +78,7 @@ export default defineConfig([
 - [x] Auth Flow (Zustand + RHF + Zod)
 - [x] Data Fetching & Pagination (TanStack Query)
 - [x] Form Tambah/Edit (Ant Design Modal)
+
+## Testing
+- npm install
+- npm run dev
