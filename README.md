@@ -81,4 +81,12 @@ export default defineConfig([
 
 ## Testing
 - npm install
-- npm run dev
+- npm run 
+
+## Check List Revisi
+- [x] Logika CRUD & Pagination
+- [x] Error Api
+- [x] Interface respone
+- [x] createHashRouter & lazy loading
+- [x] auth
+- [x] lain-lain

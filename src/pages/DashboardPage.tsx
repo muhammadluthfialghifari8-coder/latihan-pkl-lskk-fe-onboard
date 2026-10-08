@@ -11,12 +11,9 @@ import {
 } from '../hooks/useItemMutations';
 import type { Item } from '../types/item';
 import ItemFormModal from '../components/ItemFormModal';
+import type { ItemFormData } from '../schemas/itemSchema';
 
-interface ItemFormData {
-  name: string;
-  description: string;
-  price: number;
-}
+
 
 const DashboardPage = () => {
   const navigate = useNavigate();
@@ -120,7 +117,7 @@ const DashboardPage = () => {
   ], [updateMutation.isPending, deleteMutation.isPending, handleDelete]);
 
   return (
-    <div className="p-8"> 
+    <div className="p-4 md:p-8"> 
       <Card 
         title="Daftar Produk (Client-Side CRUD)" 
         variant="borderless"
@@ -148,6 +145,7 @@ const DashboardPage = () => {
         }
       >
         <Table
+          scroll={{ x: 600 }}
           columns={columns}
           // HAPUS displayData/localItems
           dataSource={data?.data || []} 
