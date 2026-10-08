@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Modal, Form, Input, InputNumber, message } from 'antd';
+import { Modal, Form, Input, InputNumber, Button } from 'antd';
 import type { Item } from '../types/item';
 
 // Schema Validasi untuk Tambah/Edit
@@ -19,6 +19,7 @@ interface Props {
   onClose: () => void;
   initialData?: Item | null; // Kalau ada datanya = Edit, kalau null = Tambah
   onSubmit: (data: ItemFormData) => Promise<void>;
+  isSubmitting?: boolean;
 }
 
 const ItemFormModal = ({ open, onClose, initialData, onSubmit }: Props) => {
@@ -35,13 +36,8 @@ const ItemFormModal = ({ open, onClose, initialData, onSubmit }: Props) => {
   }, [open, initialData, reset]);
 
   const handleFinish = async (data: ItemFormData) => {
-    try {
-      await onSubmit(data);
-      message.success(initialData ? 'Data berhasil diperbarui!' : 'Data berhasil ditambahkan!');
-      onClose();
-    } catch { 
-      message.error('Gagal menyimpan data');
-    }
+    await onSubmit(data); 
+    onClose();
   };
 
   return (
@@ -83,17 +79,22 @@ const ItemFormModal = ({ open, onClose, initialData, onSubmit }: Props) => {
                 style={{ width: '100%' }} 
                 min={0} 
                 formatter={(value) => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                parser={(value) => value!.replace(/Rp\s?|(,*)/g, '') as unknown as number}
-              />
+                parser={(value) => Number(value?.replace(/Rp\s?|,/g, '') ?? 0)}              />
             </Form.Item>
           )}
         />
 
         <Form.Item className="mb-0 flex justify-end gap-2">
           <button type="button" onClick={onClose} className="px-4 py-2 rounded border">Batal</button>
-          <button type="submit" disabled={isSubmitting} className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50">
-            {isSubmitting ? 'Menyimpan...' : (initialData ? 'Simpan Perubahan' : 'Tambah Produk')}
-          </button>
+          <Button 
+              type="primary" 
+              htmlType="submit" 
+              disabled={isSubmitting}
+              loading={isSubmitting}
+              block
+            >
+              {isSubmitting ? 'Menyimpan...' : (initialData ? 'Simpan Perubahan' : 'Tambah Produk')}
+          </Button>
         </Form.Item>
       </Form>
     </Modal>
