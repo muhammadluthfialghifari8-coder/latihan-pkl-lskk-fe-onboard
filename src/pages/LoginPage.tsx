@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { Button, Form, Input, message, Card } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
+import { authService } from '../services/authService';
 
 // 1. Schema Validasi
 const loginSchema = z.object({
@@ -18,7 +19,7 @@ const LoginPage = () => {
   const login = useAuthStore((state) => state.login);
 
   const {
-    control, // Ganti register jadi control untuk Controller
+    control, 
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
@@ -26,26 +27,26 @@ const LoginPage = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    console.log('Login Data:', data);
     
-    // Simulasi Login Dummy
-    login('dummy-token-123', { 
-      id: '1', 
-      name: 'Peserta PKL', 
-      email: data.email 
-    });
-
-    message.success('Login berhasil!');
-    navigate('/');
+    try {
+    // Panggil service
+    const response = await authService.login(data); 
+    
+    if (response.data) {
+      login(response.data.token, response.data.user);
+      message.success('Login berhasil!');
+      navigate('/', { replace: true });
+    }
+  } catch  {
+    message.error('Login gagal, coba lagi.');
+  }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <Card title="Login LSKK" className="w-full max-w-md shadow-lg">
-        {/* Hapus layout="vertical" dari Form, kita atur manual di Controller */}
         <Form onFinish={handleSubmit(onSubmit)} layout="vertical">
           
-          {/* Email Field dengan Controller */}
           <Controller
             name="email"
             control={control}
@@ -57,14 +58,13 @@ const LoginPage = () => {
               >
                 <Input 
                   placeholder="Masukkan email" 
-                  {...field} // Binding yang benar untuk AntD
+                  {...field} 
                   size="large"
                 />
               </Form.Item>
             )}
           />
 
-          {/* Password Field dengan Controller */}
           <Controller
             name="password"
             control={control}
@@ -76,7 +76,7 @@ const LoginPage = () => {
               >
                 <Input.Password 
                   placeholder="Masukkan password" 
-                  {...field} // Binding yang benar untuk AntD
+                  {...field} 
                   size="large"
                 />
               </Form.Item>

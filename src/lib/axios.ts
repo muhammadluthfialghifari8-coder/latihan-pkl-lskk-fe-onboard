@@ -1,30 +1,21 @@
 import axios from 'axios';
-import type { AxiosError } from 'axios';
 import { useAuthStore } from '../stores/authStore';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-
-export const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+const axiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
 });
 
-axiosInstance.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().token;
-
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
-});
-
+// Response Interceptor
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
-    console.error('API Error:', error.response?.data || error.message);
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expired atau invalid, paksa logout
+      useAuthStore.getState().logout();
+      window.location.href = '/#/login'; // Redirect paksa ke hash login
+    }
     return Promise.reject(error);
   }
 );
+
+export default axiosInstance;
