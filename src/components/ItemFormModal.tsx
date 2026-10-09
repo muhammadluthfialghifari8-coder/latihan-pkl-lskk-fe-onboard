@@ -102,8 +102,9 @@ const ItemFormModal = ({ open, onClose, initialData, onSubmit }: Props) => {
           )}
         />
 
-        <Form.Item className="mb-0 flex justify-end gap-2">
-          <button type="button" onClick={onClose} className="px-4 py-2 rounded border">
+        <Form.Item className="flex justify-end gap-2">
+          <div className="flex justify-end gap-2">
+          <button type="button" onClick={onClose} className="px-4 py-1 rounded border">
             Batal
           </button>
           <Button
@@ -115,6 +116,7 @@ const ItemFormModal = ({ open, onClose, initialData, onSubmit }: Props) => {
           >
             {isSubmitting ? 'Menyimpan...' : initialData ? 'Simpan Perubahan' : 'Tambah Produk'}
           </Button>
+          </div>
         </Form.Item>
       </Form>
     </Modal>
