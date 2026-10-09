@@ -90,3 +90,5 @@ export default defineConfig([
 - [x] createHashRouter & lazy loading
 - [x] auth
 - [x] lain-lain
+- [x] setup + format code with prettier
+- [x] change antd Table to ReactDataGrid (MUI)
