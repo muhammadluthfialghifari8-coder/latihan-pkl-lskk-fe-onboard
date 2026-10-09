@@ -1,25 +1,39 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Table, Card, Button, Popconfirm, message, Space } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
+import { Card, Button, Popconfirm, message, Space } from 'antd';
+import { DataGrid } from '@mui/x-data-grid';
+import type { GridColDef } from '@mui/x-data-grid'; 
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { useItems } from '../hooks/useItems';
-import { useCreateItem, useUpdateItem, useDeleteItem } from '../hooks/useItemMutations';
+import { 
+  useCreateItem, 
+  useUpdateItem, 
+  useDeleteItem 
+} from '../hooks/useItemMutations';
 import type { Item } from '../types/item';
 import ItemFormModal from '../components/ItemFormModal';
-import type { ItemFormData } from '../schemas/itemSchema';
+
+interface ItemFormData {
+  name: string;
+  description: string;
+  price: number;
+}
 
 const DashboardPage = () => {
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
-
-  // State UI ONLY - HAPUS localItems sepenuhnya
+  
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
 
-  // Ambil data dari server & mutation hooks
+  // State untuk MUI Pagination (0-indexed)
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0, 
+    pageSize: 10,
+  });
+
   const { data, isLoading } = useItems(page, limit);
   const createMutation = useCreateItem();
   const updateMutation = useUpdateItem();
@@ -31,14 +45,10 @@ const DashboardPage = () => {
     navigate('/login', { replace: true });
   };
 
-  // handle submit : mutation
   const handleFormSubmit = async (formData: ItemFormData) => {
     try {
       if (editingItem) {
-        await updateMutation.mutateAsync({
-          id: editingItem.id,
-          payload: formData,
-        });
+        await updateMutation.mutateAsync({ id: editingItem.id, payload: formData });
         message.success('Data berhasil diperbarui!');
       } else {
         await createMutation.mutateAsync(formData);
@@ -52,74 +62,73 @@ const DashboardPage = () => {
     }
   };
 
-  // HANDLE DELETE: mutation
-  const handleDelete = useCallback(
-    async (id: string) => {
-      try {
-        await deleteMutation.mutateAsync(id);
-        message.success('Data berhasil dihapus!');
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Gagal menghapus data';
-        message.error(errorMessage);
-      }
+  const handleDelete = useCallback(async (id: string) => {
+    try {
+      await deleteMutation.mutateAsync(id);
+      message.success('Data berhasil dihapus!');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Gagal menghapus data';
+      message.error(errorMessage);
+    }
+  }, [deleteMutation]);
+
+  const handleEdit = (record: Item) => {
+    setEditingItem(record);
+    setIsModalOpen(true);
+  };
+
+  // KOLOM MUI DATA GRID
+  const columns = useMemo<GridColDef<Item>[]>(() => [
+    { field: 'id', headerName: 'ID', width: 120 },
+    { field: 'name', headerName: 'Nama Produk', flex: 1 },
+    { 
+      field: 'price', 
+      headerName: 'Harga', 
+      width: 150,
+      // valueFormatter untuk text biasa
+      valueFormatter: (value) => `Rp ${Number(value).toLocaleString('id-ID')}` 
     },
-    [deleteMutation]
-  );
-
-  const columns = useMemo<ColumnsType<Item>>(
-    () => [
-      { title: 'ID', dataIndex: 'id', key: 'id', width: 120 },
-      { title: 'Nama Produk', dataIndex: 'name', key: 'name' },
-      {
-        title: 'Harga',
-        dataIndex: 'price',
-        key: 'price',
-        render: (price: number) => `Rp ${price.toLocaleString('id-ID')}`,
-      },
-      {
-        title: 'Aksi',
-        key: 'action',
-        width: 180,
-        render: (_, record) => (
-          <Space size="small">
-            <Button
-              size="small"
-              type="primary"
-              loading={updateMutation.isPending} // Loading state saat edit
-              onClick={() => {
-                setEditingItem(record);
-                setIsModalOpen(true);
-              }}
+    { 
+      field: 'action',
+      headerName: 'Aksi',
+      width: 180,
+      sortable: false,
+      // renderCell untuk komponen React (tombol)
+      renderCell: (params) => (
+        <Space size="small">
+          <Button 
+            size="small" 
+            type="primary"
+            loading={updateMutation.isPending}
+            onClick={() => handleEdit(params.row)}
+          >
+            Edit
+          </Button>
+          
+          <Popconfirm
+            title="Hapus produk ini?"
+            description="Data yang dihapus tidak bisa dikembalikan."
+            onConfirm={() => handleDelete(params.row.id)}
+            okText="Ya, Hapus"
+            cancelText="Batal"
+          >
+            <Button 
+              size="small" 
+              danger 
+              loading={deleteMutation.isPending}
             >
-              Edit
+              Hapus
             </Button>
-
-            <Popconfirm
-              title="Hapus produk ini?"
-              description="Data yang dihapus tidak bisa dikembalikan."
-              onConfirm={() => handleDelete(record.id)}
-              okText="Ya, Hapus"
-              cancelText="Batal"
-            >
-              <Button
-                size="small"
-                danger
-                loading={deleteMutation.isPending} // Loading state saat hapus
-              >
-                Hapus
-              </Button>
-            </Popconfirm>
-          </Space>
-        ),
-      },
-    ],
-    [updateMutation.isPending, deleteMutation.isPending, handleDelete]
-  );
+          </Popconfirm>
+        </Space>
+      )
+    },
+  ], [updateMutation.isPending, deleteMutation.isPending, handleDelete]);
 
   return (
     <div className="p-4 md:p-8">
-      <Card
-        title="Daftar Produk (Client-Side CRUD)"
+      <Card 
+        title="Daftar Produk (MUI Data Grid)" 
         variant="borderless"
         extra={
           <Space size="small">
@@ -132,11 +141,12 @@ const DashboardPage = () => {
             >
               <Button danger>Logout</Button>
             </Popconfirm>
-            <Button
-              type="primary"
-              onClick={() => {
-                setEditingItem(null);
-                setIsModalOpen(true);
+            <Button 
+              type="primary" 
+              loading={createMutation.isPending}
+              onClick={() => { 
+                setEditingItem(null); 
+                setIsModalOpen(true); 
               }}
             >
               + Tambahkan Produk
@@ -144,32 +154,33 @@ const DashboardPage = () => {
           </Space>
         }
       >
-        <Table
-          scroll={{ x: 600 }}
-          columns={columns}
-          // HAPUS displayData/localItems
-          dataSource={data?.data || []}
-          rowKey="id"
-          // Loading state disederhanakan
-          loading={isLoading}
-          pagination={{
-            current: page,
-            pageSize: limit,
-            // pakai meta.totalData dari server
-            total: data?.meta?.totalData || 0,
-            onChange: (newPage) => setPage(newPage),
-          }}
-          locale={{
-            emptyText: 'Belum ada data produk.',
-          }}
-        />
+        {/* MUI DATA GRID */}
+        <div style={{ height: 500, width: '100%' }}>
+          <DataGrid
+            rows={data?.data || []}
+            columns={columns}
+            loading={isLoading}
+            rowCount={data?.meta?.totalData || 0}
+            paginationMode="server"
+            paginationModel={paginationModel}
+            onPaginationModelChange={(newModel) => {
+              setPaginationModel(newModel);
+              // Konversi 0-indexed MUI ke 1-indexed API
+              setPage(newModel.page + 1); 
+            }}
+            pageSizeOptions={[10]}
+            disableRowSelectionOnClick
+            sx={{ border: 'none' }} // Hilangkan border default MUI biar nyatu sama Card AntD
+          />
+        </div>
       </Card>
 
-      <ItemFormModal
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+      <ItemFormModal 
+        open={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
         initialData={editingItem}
         onSubmit={handleFormSubmit}
+        isSubmitting={createMutation.isPending || updateMutation.isPending}
       />
     </div>
   );
