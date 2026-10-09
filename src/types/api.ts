@@ -11,5 +11,5 @@ export interface IResponseEntity<T> {
   status: boolean;
   message: string;
   data?: T;
-  meta?: ImetaPagination; 
+  meta?: ImetaPagination;
 }

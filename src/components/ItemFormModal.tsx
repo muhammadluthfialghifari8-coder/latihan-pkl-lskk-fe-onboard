@@ -23,7 +23,12 @@ interface Props {
 }
 
 const ItemFormModal = ({ open, onClose, initialData, onSubmit }: Props) => {
-  const { control, handleSubmit, reset, formState: { isSubmitting } } = useForm<ItemFormData>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = useForm<ItemFormData>({
     resolver: zodResolver(itemSchema),
     defaultValues: initialData || { name: '', description: '', price: 0 },
   });
@@ -36,14 +41,14 @@ const ItemFormModal = ({ open, onClose, initialData, onSubmit }: Props) => {
   }, [open, initialData, reset]);
 
   const handleFinish = async (data: ItemFormData) => {
-    await onSubmit(data); 
+    await onSubmit(data);
     onClose();
   };
 
   return (
     <Modal
       title={initialData ? 'Edit Produk' : 'Tambah Produk'}
-      open={open}  
+      open={open}
       onCancel={onClose}
       footer={null} // Kita pakai tombol submit di dalam form
       destroyOnHidden
@@ -53,7 +58,11 @@ const ItemFormModal = ({ open, onClose, initialData, onSubmit }: Props) => {
           name="name"
           control={control}
           render={({ field, fieldState }) => (
-            <Form.Item label="Nama Produk" validateStatus={fieldState.error ? 'error' : ''} help={fieldState.error?.message}>
+            <Form.Item
+              label="Nama Produk"
+              validateStatus={fieldState.error ? 'error' : ''}
+              help={fieldState.error?.message}
+            >
               <Input {...field} placeholder="Masukkan nama produk" />
             </Form.Item>
           )}
@@ -63,7 +72,11 @@ const ItemFormModal = ({ open, onClose, initialData, onSubmit }: Props) => {
           name="description"
           control={control}
           render={({ field, fieldState }) => (
-            <Form.Item label="Deskripsi" validateStatus={fieldState.error ? 'error' : ''} help={fieldState.error?.message}>
+            <Form.Item
+              label="Deskripsi"
+              validateStatus={fieldState.error ? 'error' : ''}
+              help={fieldState.error?.message}
+            >
               <Input.TextArea {...field} rows={3} placeholder="Masukkan deskripsi produk" />
             </Form.Item>
           )}
@@ -73,27 +86,34 @@ const ItemFormModal = ({ open, onClose, initialData, onSubmit }: Props) => {
           name="price"
           control={control}
           render={({ field, fieldState }) => (
-            <Form.Item label="Harga (Rp)" validateStatus={fieldState.error ? 'error' : ''} help={fieldState.error?.message}>
-              <InputNumber 
-                {...field} 
-                style={{ width: '100%' }} 
-                min={0} 
+            <Form.Item
+              label="Harga (Rp)"
+              validateStatus={fieldState.error ? 'error' : ''}
+              help={fieldState.error?.message}
+            >
+              <InputNumber
+                {...field}
+                style={{ width: '100%' }}
+                min={0}
                 formatter={(value) => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                parser={(value) => Number(value?.replace(/Rp\s?|,/g, '') ?? 0)}              />
+                parser={(value) => Number(value?.replace(/Rp\s?|,/g, '') ?? 0)}
+              />
             </Form.Item>
           )}
         />
 
         <Form.Item className="mb-0 flex justify-end gap-2">
-          <button type="button" onClick={onClose} className="px-4 py-2 rounded border">Batal</button>
-          <Button 
-              type="primary" 
-              htmlType="submit" 
-              disabled={isSubmitting}
-              loading={isSubmitting}
-              block
-            >
-              {isSubmitting ? 'Menyimpan...' : (initialData ? 'Simpan Perubahan' : 'Tambah Produk')}
+          <button type="button" onClick={onClose} className="px-4 py-2 rounded border">
+            Batal
+          </button>
+          <Button
+            type="primary"
+            htmlType="submit"
+            disabled={isSubmitting}
+            loading={isSubmitting}
+            block
+          >
+            {isSubmitting ? 'Menyimpan...' : initialData ? 'Simpan Perubahan' : 'Tambah Produk'}
           </Button>
         </Form.Item>
       </Form>

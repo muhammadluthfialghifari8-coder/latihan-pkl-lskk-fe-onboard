@@ -14,7 +14,7 @@ export const authService = {
   login: async (_payload: LoginPayload): Promise<IResponseEntity<LoginResponseData>> => {
     // Simulasi delay network
     await new Promise((resolve) => setTimeout(resolve, 800));
-    
+
     // Return dummy data sesuai standar IResponseEntity
     return {
       code: 200,

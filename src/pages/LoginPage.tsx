@@ -19,7 +19,7 @@ const LoginPage = () => {
   const login = useAuthStore((state) => state.login);
 
   const {
-    control, 
+    control,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
@@ -27,40 +27,34 @@ const LoginPage = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    
     try {
-    // Panggil service
-    const response = await authService.login(data); 
-    
-    if (response.data) {
-      login(response.data.token, response.data.user);
-      message.success('Login berhasil!');
-      navigate('/', { replace: true });
+      // Panggil service
+      const response = await authService.login(data);
+
+      if (response.data) {
+        login(response.data.token, response.data.user);
+        message.success('Login berhasil!');
+        navigate('/', { replace: true });
+      }
+    } catch {
+      message.error('Login gagal, coba lagi.');
     }
-  } catch  {
-    message.error('Login gagal, coba lagi.');
-  }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <Card title="Login LSKK" className="w-full max-w-md shadow-lg">
         <Form onFinish={handleSubmit(onSubmit)} layout="vertical">
-          
           <Controller
             name="email"
             control={control}
             render={({ field }) => (
-              <Form.Item 
-                label="Email" 
+              <Form.Item
+                label="Email"
                 validateStatus={errors.email ? 'error' : ''}
                 help={errors.email?.message}
               >
-                <Input 
-                  placeholder="Masukkan email" 
-                  {...field} 
-                  size="large"
-                />
+                <Input placeholder="Masukkan email" {...field} size="large" />
               </Form.Item>
             )}
           />
@@ -69,27 +63,17 @@ const LoginPage = () => {
             name="password"
             control={control}
             render={({ field }) => (
-              <Form.Item 
-                label="Password" 
+              <Form.Item
+                label="Password"
                 validateStatus={errors.password ? 'error' : ''}
                 help={errors.password?.message}
               >
-                <Input.Password 
-                  placeholder="Masukkan password" 
-                  {...field} 
-                  size="large"
-                />
+                <Input.Password placeholder="Masukkan password" {...field} size="large" />
               </Form.Item>
             )}
           />
 
-          <Button 
-            type="primary" 
-            htmlType="submit" 
-            block 
-            size="large" 
-            loading={isSubmitting}
-          >
+          <Button type="primary" htmlType="submit" block size="large" loading={isSubmitting}>
             Masuk
           </Button>
         </Form>

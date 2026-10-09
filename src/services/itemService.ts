@@ -17,7 +17,7 @@ export const itemService = {
     await delay(800);
     const start = (page - 1) * limit;
     const data = mockDatabase.slice(start, start + limit);
-    
+
     return {
       code: 200,
       status: true,
@@ -54,9 +54,9 @@ export const itemService = {
     await delay(600);
     const index = mockDatabase.findIndex((item) => item.id === id);
     if (index === -1) throw new Error('Item tidak ditemukan');
-    
+
     mockDatabase[index] = { ...mockDatabase[index], ...payload };
-    
+
     return {
       code: 200,
       status: true,
@@ -69,9 +69,9 @@ export const itemService = {
     await delay(600);
     const index = mockDatabase.findIndex((item) => item.id === id);
     if (index === -1) throw new Error('Item tidak ditemukan');
-    
+
     mockDatabase = mockDatabase.filter((item) => item.id !== id);
-    
+
     return {
       code: 200,
       status: true,
