@@ -36,8 +36,14 @@ const LoginPage = () => {
         message.success('Login berhasil!');
         navigate('/', { replace: true });
       }
-    } catch {
-      message.error('Login gagal, coba lagi.');
+    } catch (err) {
+      // Casting err agar TypeScript tidak komplain saat akses .response
+      const axiosError = err as { response?: { data?: { message?: string } }; message?: string };
+      
+      // Ambil pesan dari backend jika ada, kalau tidak pakai pesan default
+      const errorMessage = axiosError.response?.data?.message || axiosError.message || 'Login gagal, silakan coba lagi.';
+      
+      message.error(errorMessage);
     }
   };
 

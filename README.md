@@ -1,76 +1,30 @@
-# React + TypeScript + Vite
+# Latihan Frontend PKL LSKK
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Project ini merupakan aplikasi frontend React untuk latihan PKL di LSKK. Aplikasi ini mengimplementasikan praktik terbaik (best practices) dalam pengembangan web modern, termasuk manajemen state, routing, validasi form, dan penanganan data yang efisien.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Framework:** [React](https://react.dev/) + [Vite](https://vitejs.dev/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components:** [Ant Design](https://ant.design/) & [MUI X DataGrid](https://mui.com/x/react-data-grid/)
+- **State Management:** [Zustand](https://zustand-demo.pmnd.rs/) (dengan persist middleware)
+- **Data Fetching:** [TanStack Query (React Query)](https://tanstack.com/query/latest)
+- **Routing:** [React Router DOM](https://reactrouter.com/) (`createHashRouter` + Lazy Loading)
+- **Forms & Validation:** [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
+- **Networking:** [Axios](https://axios-http.com/) + [Axios Mock Adapter](https://github.com/ctimmerm/axios-mock-adapter)
+- **Tooling:** [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/)
 
-## React Compiler
+##  Prerequisites
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Pastikan kamu telah menginstal:
+- [Node.js](https://nodejs.org/) (v18 atau lebih baru)
+- [npm](https://www.npmjs.com/) atau [pnpm](https://pnpm.io/)
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
-
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Install Dependencies
+- npm install
+- cp .env.example .env
+- npm run dev
 
 ```
 ## Progress Minggu 1
@@ -78,10 +32,6 @@ export default defineConfig([
 - [x] Auth Flow (Zustand + RHF + Zod)
 - [x] Data Fetching & Pagination (TanStack Query)
 - [x] Form Tambah/Edit (Ant Design Modal)
-
-## Testing
-- npm install
-- npm run 
 
 ## Check List Revisi
 - [x] Logika CRUD & Pagination
@@ -92,3 +42,7 @@ export default defineConfig([
 - [x] lain-lain
 - [x] setup + format code with prettier
 - [x] change antd Table to ReactDataGrid (MUI)
+- [x] N1 : Revisi network axios mock adapter & restore auth inerceptor
+- [x] N2 : Revisi model prevent modal close on sub failure
+- [x] N3 : Revisi schemas single true source
+- [x] N4 : Revisi show api error, per-row delete loading state, cleanup 

@@ -19,8 +19,6 @@ const DashboardPage = () => {
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
   
-  const [page, setPage] = useState(1);
-  const [limit] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
 
@@ -30,7 +28,8 @@ const DashboardPage = () => {
     pageSize: 10,
   });
 
-  const { data, isLoading } = useItems(page, limit);
+  const { data, isLoading, isError, error } = useItems(paginationModel.page + 1, paginationModel.pageSize);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const createMutation = useCreateItem();
   const updateMutation = useUpdateItem();
   const deleteMutation = useDeleteItem();
@@ -59,12 +58,15 @@ const DashboardPage = () => {
   };
 
   const handleDelete = useCallback(async (id: string) => {
+    setDeletingId(id);
     try {
       await deleteMutation.mutateAsync(id);
       message.success('Data berhasil dihapus!');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Gagal menghapus data';
       message.error(errorMessage);
+    } finally {
+      setDeletingId(null);
     }
   }, [deleteMutation]);
 
@@ -111,7 +113,7 @@ const DashboardPage = () => {
             <Button 
               size="small" 
               danger 
-              loading={deleteMutation.isPending}
+              loading={deletingId === params.row.id}
             >
               Hapus
             </Button>
@@ -119,7 +121,7 @@ const DashboardPage = () => {
         </Space>
       )
     },
-  ], [updateMutation.isPending, deleteMutation.isPending, handleDelete]);
+  ], [updateMutation.isPending, deletingId, handleDelete]);
 
   return (
     <div className="p-4 md:p-8">
@@ -139,7 +141,7 @@ const DashboardPage = () => {
             </Popconfirm>
             <Button 
               type="primary" 
-              loading={createMutation.isPending}
+              loading={createMutation.isPending }
               onClick={() => { 
                 setEditingItem(null); 
                 setIsModalOpen(true); 
@@ -150,6 +152,16 @@ const DashboardPage = () => {
           </Space>
         }
       >
+        {/* SHOW ERROR */}
+        {isError && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md text-red-700">
+            <p className="font-semibold">Gagal memuat data!</p>
+            <p className="text-sm">
+              {error instanceof Error ? error.message : 'Terjadi kesalahan pada server. Silakan coba lagi.'}
+            </p>
+          </div>
+        )}
+
         {/* MUI DATA GRID */}
         <div style={{ height: 500, width: '100%' }}>
           <DataGrid
@@ -161,8 +173,6 @@ const DashboardPage = () => {
             paginationModel={paginationModel}
             onPaginationModelChange={(newModel) => {
               setPaginationModel(newModel);
-              // Konversi 0-indexed MUI ke 1-indexed API
-              setPage(newModel.page + 1); 
             }}
             pageSizeOptions={[10]}
             disableRowSelectionOnClick

@@ -71,6 +71,7 @@ mock.onGet('/items').reply((config) => {
 mock.onPost('/auth/login').reply((config) => {
   const { email } = JSON.parse(config.data); // Ambil email dari body request
   
+
   return [
     200,
     {
