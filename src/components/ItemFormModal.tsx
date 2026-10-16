@@ -42,7 +42,6 @@ const ItemFormModal = ({ open, onClose, initialData, onSubmit }: Props) => {
 
   const handleFinish = async (data: ItemFormData) => {
     await onSubmit(data);
-    onClose();
   };
 
   return (
