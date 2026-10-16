@@ -16,12 +16,11 @@ interface Props {
   isSubmitting?: boolean;
 }
 
-const ItemFormModal = ({ open, onClose, initialData, onSubmit }: Props) => {
+const ItemFormModal = ({ open, onClose, initialData, onSubmit, isSubmitting }: Props) => {
   const {
     control,
     handleSubmit,
     reset,
-    formState: { isSubmitting },
   } = useForm<ItemFormData>({
     resolver: zodResolver(itemSchema),
     defaultValues: initialData || { name: '', description: '', price: 0 },
