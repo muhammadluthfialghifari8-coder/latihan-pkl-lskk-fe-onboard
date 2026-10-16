@@ -1,18 +1,12 @@
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+// import { z } from 'zod';
 import { Modal, Form, Input, InputNumber, Button } from 'antd';
 import type { Item } from '../types/item';
+import { itemSchema } from '../schemas/itemSchema';
+import type { ItemFormData } from '../schemas/itemSchema';
 
-// Schema Validasi untuk Tambah/Edit
-const itemSchema = z.object({
-  name: z.string().min(3, 'Nama produk minimal 3 karakter'),
-  description: z.string().min(10, 'Deskripsi minimal 10 karakter'),
-  price: z.number().min(1000, 'Harga minimal Rp 1.000'),
-});
-
-type ItemFormData = z.infer<typeof itemSchema>;
 
 interface Props {
   open: boolean;
