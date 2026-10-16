@@ -26,7 +26,6 @@ Pastikan kamu telah menginstal:
 - cp .env.example .env
 - npm run dev
 
-```
 ## Progress Minggu 1
 - [x] Setup Environment (Vite, React, TS, Tailwind v4)
 - [x] Auth Flow (Zustand + RHF + Zod)
