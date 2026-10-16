@@ -12,12 +12,8 @@ import {
 } from '../hooks/useItemMutations';
 import type { Item } from '../types/item';
 import ItemFormModal from '../components/ItemFormModal';
+import type { ItemFormData } from '../schemas/itemSchema';
 
-interface ItemFormData {
-  name: string;
-  description: string;
-  price: number;
-}
 
 const DashboardPage = () => {
   const navigate = useNavigate();
